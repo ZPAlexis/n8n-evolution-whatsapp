@@ -1,0 +1,7 @@
+n8n.example.com {
+    reverse_proxy n8n:5678
+}
+
+api.example.com {
+    reverse_proxy evolution_api:8080
+}

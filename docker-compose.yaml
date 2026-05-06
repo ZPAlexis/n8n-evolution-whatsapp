@@ -1,0 +1,88 @@
+services:
+  postgres:
+    container_name: postgres_shared
+    image: postgres:15
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=n8npass
+      - POSTGRES_USER=n8n
+      - POSTGRES_DB=n8n
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - automation_net
+
+  redis:
+    container_name: redis_shared
+    image: redis:latest
+    restart: always
+    command: redis-server --appendonly yes
+    networks:
+      - automation_net
+
+  evolution_api:
+    container_name: evolution_api
+    image: evoapicloud/evolution-api:v2.3.7
+    restart: always
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      - AUTHENTICATION_API_KEY=${AUTHENTICATION_API_KEY}
+    volumes:
+      - evolution_instances:/evolution/instances
+    networks:
+      - automation_net
+
+  n8n:
+    container_name: n8n
+    image: n8nio/n8n:latest
+    restart: always
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "5678:5678"
+    environment:
+      - GENERIC_TIMEZONE=America/Sao_Paulo
+      - TZ=America/Sao_Paulo
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=n8n
+      - DB_POSTGRESDB_USER=n8n
+      - DB_POSTGRESDB_PASSWORD=n8npass
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - automation_net
+
+  caddy:
+    image: caddy:2
+    container_name: caddy_proxy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - automation_net
+
+networks:
+  automation_net:
+    driver: bridge
+
+volumes:
+  n8n_data:
+  postgres_data:
+  evolution_instances:
+  caddy_data:
+  caddy_config:

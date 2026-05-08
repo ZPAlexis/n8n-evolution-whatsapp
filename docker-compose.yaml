@@ -22,8 +22,11 @@ services:
 
   evolution_api:
     container_name: evolution_api
-    image: evoapicloud/evolution-api:v2.3.7
+    image: evoapicloud/evolution-api:homolog
     restart: always
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     depends_on:
       - postgres
       - redis
@@ -33,6 +36,9 @@ services:
       - .env
     environment:
       - AUTHENTICATION_API_KEY=${AUTHENTICATION_API_KEY}
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=1
+      - net.ipv6.conf.default.disable_ipv6=1
     volumes:
       - evolution_instances:/evolution/instances
     networks:

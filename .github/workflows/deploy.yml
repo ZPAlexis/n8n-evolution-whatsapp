@@ -38,8 +38,12 @@ jobs:
             set -e
             cd ~/n8n-automation
             
+            echo "Fetching latest changes from GitHub..."
             git fetch --all
+
+            echo "Resetting repository..."
             git reset --hard origin/main
             
+            echo "Pulling new Docker images and restarting..."
             docker compose pull
             docker compose up -d --remove-orphans

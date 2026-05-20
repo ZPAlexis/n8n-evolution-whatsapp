@@ -17,12 +17,14 @@ services:
     image: redis:latest
     restart: always
     command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
     networks:
       - automation_net
 
   evolution_api:
     container_name: evolution_api
-    image: evoapicloud/evolution-api:homolog
+    image: evoapicloud/evolution-api:v2.1.1
     restart: always
     dns:
       - 8.8.8.8
@@ -36,9 +38,6 @@ services:
       - .env
     environment:
       - AUTHENTICATION_API_KEY=${AUTHENTICATION_API_KEY}
-    sysctls:
-      - net.ipv6.conf.all.disable_ipv6=1
-      - net.ipv6.conf.default.disable_ipv6=1
     volumes:
       - evolution_instances:/evolution/instances
     networks:
@@ -92,3 +91,4 @@ volumes:
   evolution_instances:
   caddy_data:
   caddy_config:
+  redis_data:

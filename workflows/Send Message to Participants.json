@@ -1,0 +1,309 @@
+{
+  "name": "Send Message to Participants",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "YGHqL9MgoeF4Kgzh",
+          "mode": "list",
+          "cachedResultName": "Participant List",
+          "cachedResultUrl": "/projects/PROJECT_ID/datatables/YGHqL9MgoeF4Kgzh"
+        },
+        "limit": 5
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -448,
+        96
+      ],
+      "id": "1ebcc17b-8806-4700-a912-128424e61a12",
+      "name": "Get Participants"
+    },
+    {
+      "parameters": {
+        "operation": "rowNotExists",
+        "dataTableId": {
+          "__rl": true,
+          "value": "hlSEPpQfspzjC2EW",
+          "mode": "list",
+          "cachedResultName": "Participant Receival List",
+          "cachedResultUrl": "/projects/PROJECT_ID/datatables/hlSEPpQfspzjC2EW"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "participantId",
+              "keyValue": "={{ $json.phoneNumber }}"
+            },
+            {
+              "keyName": "messageIdReceived",
+              "keyValue": "={{ $('Send Message Called').item.json.messadeId }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        176
+      ],
+      "id": "847990be-48d7-4944-b50b-e4e24764db59",
+      "name": "Check if participant received post"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "hlSEPpQfspzjC2EW",
+          "mode": "list",
+          "cachedResultName": "Participant Receival List",
+          "cachedResultUrl": "/projects/PROJECT_ID/datatables/hlSEPpQfspzjC2EW"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "participantId": "={{ $('Get Participants').item.json.phoneNumber }}",
+            "messageIdReceived": "={{ $('Send Message Called').item.json.messadeId }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "participantId",
+              "displayName": "participantId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "messageIdReceived",
+              "displayName": "messageIdReceived",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        176
+      ],
+      "id": "a8b97a7d-54d2-41d1-b397-8ef157bded8a",
+      "name": "Insert row in participant receival list"
+    },
+    {
+      "parameters": {
+        "amount": "={{ Math.floor(Math.random() * (15 - 5 + 1) + 5) }}"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        416,
+        176
+      ],
+      "id": "5b6f7468-181f-49b8-8504-b720f4ae7d60",
+      "name": "Wait",
+      "webhookId": "00000000-0000-0000-0000-000000000003"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f90caf0c-e6d6-4015-8f05-dda4b1f0ed10",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "messadeId"
+            },
+            {
+              "name": "messageText"
+            }
+          ]
+        }
+      },
+      "id": "51526019-eddc-47d2-a2b9-aa138f1a4b56",
+      "typeVersion": 1.1,
+      "name": "Send Message Called",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        -672,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": 5,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -240,
+        96
+      ],
+      "id": "fffe0641-93d3-47b3-b64d-409348aedd18",
+      "name": "Loop Over Participants"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "automation_instance",
+        "remoteJid": "={{ $('Get Participants').item.json.phoneNumber }}",
+        "messageText": "={{ $('Send Message Called').item.json.messageText }}",
+        "options_message": {
+          "delay": "={{ Math.floor(Math.random() * (1500 - 500 + 1000) + 5000) }}"
+        }
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        608,
+        176
+      ],
+      "id": "6745bb1d-d633-4396-8889-2d6fa86faeb3",
+      "name": "Send message",
+      "credentials": {
+        "evolutionApi": {
+          "id": "AOSxUBGW5kyCIXMj",
+          "name": "Evolution account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Send Message Called": [
+      {
+        "json": {
+          "messadeId": "https://example.com/?p=38216",
+          "messageText": "https://example.com/?p=38216"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Get Participants": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Participants",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if participant received post": {
+      "main": [
+        [
+          {
+            "node": "Insert row in participant receival list",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert row in participant receival list": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Message Called": {
+      "main": [
+        [
+          {
+            "node": "Get Participants",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Participants": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Check if participant received post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send message": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Participants",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "563a7e78-7532-4a34-b403-dfcaea3f7ba2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "nodeGroups": [],
+  "id": "BenizVnzhhc0KWbv",
+  "tags": []
+}

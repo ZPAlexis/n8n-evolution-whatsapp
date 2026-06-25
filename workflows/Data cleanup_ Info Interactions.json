@@ -1,0 +1,87 @@
+{
+  "name": "Data cleanup: Info Interactions",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6,
+              "triggerAtMinute": {}
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f11472fd-3a11-4cfd-ae7e-4078f4ba5082",
+      "name": "Every 6 hours"
+    },
+    {
+      "parameters": {
+        "operation": "deleteRows",
+        "dataTableId": {
+          "__rl": true,
+          "value": "10A3FZrCWsNIwDH7",
+          "mode": "list",
+          "cachedResultName": "Interactions List",
+          "cachedResultUrl": "/projects/PROJECT_ID/datatables/10A3FZrCWsNIwDH7"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "createdAt",
+              "condition": "lt",
+              "keyValue": "={{ $now.minus({ hours: 12 }) }}"
+            },
+            {
+              "keyName": "interactionType",
+              "keyValue": "info"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "4d9429e2-0815-4c47-8ccd-88f0da269b20",
+      "name": "Delete interaction row(s) >12h"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Every 6 hours": {
+      "main": [
+        [
+          {
+            "node": "Delete interaction row(s) >12h",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "0a105a93-9e89-44fd-b70d-f8ee5a9ea6b9",
+  "meta": {
+    "instanceId": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "nodeGroups": [],
+  "id": "kOYcV4nq0xJBIY57",
+  "tags": []
+}

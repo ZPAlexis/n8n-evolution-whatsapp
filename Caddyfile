@@ -1,7 +1,7 @@
-n8n.example.com {
+{$N8N_DOMAIN} {
     reverse_proxy n8n:5678
 }
 
-api.example.com {
+{$EVOLUTION_API_DOMAIN} {
     reverse_proxy evolution_api:8080
 }

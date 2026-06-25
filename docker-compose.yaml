@@ -71,6 +71,9 @@ services:
     image: caddy:2
     container_name: caddy_proxy
     restart: always
+    environment:
+      - N8N_DOMAIN=${N8N_DOMAIN}
+      - EVOLUTION_API_DOMAIN=${EVOLUTION_API_DOMAIN}
     ports:
       - "80:80"
       - "443:443"

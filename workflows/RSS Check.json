@@ -1,0 +1,272 @@
+{
+  "name": "RSS Check",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "triggerAtMinute": 30
+            }
+          ]
+        }
+      },
+      "id": "7b5f109f-e0bb-4954-a4a4-fdcd4d78962e",
+      "name": "Every 1 hour",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        -224,
+        112
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "operation": "rowNotExists",
+        "dataTableId": {
+          "__rl": true,
+          "value": "u3OFNGYFPyTRGFor",
+          "mode": "list",
+          "cachedResultName": "News List",
+          "cachedResultUrl": "/projects/PROJECT_ID/datatables/u3OFNGYFPyTRGFor"
+        },
+        "matchType": "=anyCondition",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "post_guid",
+              "keyValue": "={{ $json.guid }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        112
+      ],
+      "id": "80bb22bd-c88c-4d99-bcd0-153ee08e7897",
+      "name": "If NEWS does not exist"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "u3OFNGYFPyTRGFor",
+          "mode": "list",
+          "cachedResultName": "News List",
+          "cachedResultUrl": "/projects/PROJECT_ID/datatables/u3OFNGYFPyTRGFor"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "post_guid": "={{ $json.guid }}",
+            "post_title": "={{ $json.title }}"
+          },
+          "matchingColumns": [
+            "post_guid"
+          ],
+          "schema": [
+            {
+              "id": "post_guid",
+              "displayName": "post_guid",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "post_title",
+              "displayName": "post_title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        400,
+        112
+      ],
+      "id": "8ae8736b-a668-4440-a737-2c75b6feacda",
+      "name": "Insert NEWS row"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "BenizVnzhhc0KWbv",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/BenizVnzhhc0KWbv",
+          "cachedResultName": "Send Message to Participants"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "messadeId": "={{ $json.post_guid }}",
+            "messageText": "={{ $json.post_title }}: {{ $json.post_guid }}"
+          },
+          "matchingColumns": [
+            "postGuid"
+          ],
+          "schema": [
+            {
+              "id": "messadeId",
+              "displayName": "messadeId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "messageText",
+              "displayName": "messageText",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "mode": "each",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        608,
+        112
+      ],
+      "id": "ba10ebf1-e670-4ed3-acf8-c6ed34d8875f",
+      "name": "Call 'Send Message to Participants'"
+    },
+    {
+      "parameters": {
+        "url": "=https://example.com/feed",
+        "options": {}
+      },
+      "id": "73fad7b4-432d-4d28-ba9d-d004795d7223",
+      "name": "RSS Read 1",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "position": [
+        0,
+        0
+      ],
+      "retryOnFail": true,
+      "typeVersion": 1,
+      "waitBetweenTries": 5000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "=https://example.org/feed/",
+        "options": {}
+      },
+      "id": "7ad72dd2-0818-4586-aa59-1e49019e5a03",
+      "name": "RSS Read 2",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "position": [
+        0,
+        208
+      ],
+      "retryOnFail": true,
+      "typeVersion": 1,
+      "waitBetweenTries": 5000,
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Every 1 hour": {
+      "main": [
+        [
+          {
+            "node": "RSS Read 1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS Read 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If NEWS does not exist": {
+      "main": [
+        [
+          {
+            "node": "Insert NEWS row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert NEWS row": {
+      "main": [
+        [
+          {
+            "node": "Call 'Send Message to Participants'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read 1": {
+      "main": [
+        [
+          {
+            "node": "If NEWS does not exist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read 2": {
+      "main": [
+        [
+          {
+            "node": "If NEWS does not exist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "e38f2ef6-5f17-43a2-b565-c73b9b2fb43f",
+  "meta": {
+    "instanceId": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "nodeGroups": [],
+  "id": "DFvwIpUS8lNRdjur",
+  "tags": []
+}

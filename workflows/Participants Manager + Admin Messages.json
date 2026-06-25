@@ -1,0 +1,1616 @@
+{
+  "name": "Participants Manager + Admin Messages",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "00000000-0000-0000-0000-000000000001",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -384,
+        -128
+      ],
+      "id": "65b17094-155f-49cf-b695-96e2b7dcb043",
+      "name": "Webhook",
+      "webhookId": "00000000-0000-0000-0000-000000000001"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "5f18d118-119f-4b41-ab32-0fbfd560ea0c",
+              "leftValue": "={{ $('Webhook').item.json.body.data.message.conversation }}",
+              "rightValue": "ENTRAR",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "0ea1eaa8-1d76-4853-a56a-438ced7861a2",
+              "leftValue": "={{ $('Webhook').item.json.body.data.message.conversation }}",
+              "rightValue": "Entrar",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "19b13b36-6360-40bc-bd50-fb3288c0d661",
+              "leftValue": "={{ $('Webhook').item.json.body.data.message.conversation }}",
+              "rightValue": "entrar",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        928,
+        80
+      ],
+      "id": "596483ec-dd88-4fda-819c-42bc7d135067",
+      "name": "If \"ENTRAR\""
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "2abd4ffe-7715-4e02-a649-6f76ee1fb89d",
+              "leftValue": "={{ $('Webhook').item.json.body.data.message.conversation }}",
+              "rightValue": "SAIR",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "e267467e-4217-415f-8977-6628b73d44eb",
+              "leftValue": "={{ $('Webhook').item.json.body.data.message.conversation }}",
+              "rightValue": "=Sair",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "8d9dd332-a84e-4fbf-805f-3f6477d768b5",
+              "leftValue": "={{ $('Webhook').item.json.body.data.message.conversation }}",
+              "rightValue": "sair",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1152,
+        272
+      ],
+      "id": "43895b57-5fe7-4e25-b20f-1da58310aae2",
+      "name": "If \"SAIR\""
+    },
+    {
+      "parameters": {
+        "operation": "rowNotExists",
+        "dataTableId": {
+          "__rl": true,
+          "value": "YGHqL9MgoeF4Kgzh",
+          "mode": "list",
+          "cachedResultName": "Participant List",
+          "cachedResultUrl": "/projects/PROJECT_ID/datatables/YGHqL9MgoeF4Kgzh"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "phoneNumber",
+              "keyValue": "={{ $('Webhook').item.json.body.data.key.remoteJid }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1152,
+        64
+      ],
+      "id": "1240381d-e691-4ad8-9118-52aa17e822c4",
+      "name": "If NUMBER does not exist"
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = $('Webhook').first().json.body.data.message.conversation;\nconst parts = text.split(\"MESSAGE:\");\n\nreturn {\n  afterString: parts[1] ? parts[1].trim() : \"\"\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        928,
+        -128
+      ],
+      "id": "f20ce156-31c6-4a73-8b9b-bcecc8a1572f",
+      "name": "Split Message"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "YGHqL9MgoeF4Kgzh",
+          "mode": "list",
+          "cachedResultName": "Participant List",
+          "cachedResultUrl": "/projects/PROJECT_ID/datatables/YGHqL9MgoeF4Kgzh"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "phoneNumber": "={{ $('Webhook').item.json.body.data.key.remoteJid }}"
+          },
+          "matchingColumns": [
+            "phoneNumber"
+          ],
+          "schema": [
+            {
+              "id": "phoneNumber",
+              "displayName": "phoneNumber",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1360,
+        64
+      ],
+      "id": "5edf9d21-1892-4fc2-9356-b3a139b1227a",
+      "name": "Insert Participant"
+    },
+    {
+      "parameters": {
+        "operation": "rowExists",
+        "dataTableId": {
+          "__rl": true,
+          "value": "YGHqL9MgoeF4Kgzh",
+          "mode": "list",
+          "cachedResultName": "Participant List",
+          "cachedResultUrl": "/projects/PROJECT_ID/datatables/YGHqL9MgoeF4Kgzh"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "phoneNumber",
+              "keyValue": "={{ $('Webhook').item.json.body.data.key.remoteJid }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1360,
+        256
+      ],
+      "id": "b0a99e99-e9f2-43ea-a72c-3678c53ee248",
+      "name": "If NUMBER exists"
+    },
+    {
+      "parameters": {
+        "operation": "deleteRows",
+        "dataTableId": {
+          "__rl": true,
+          "value": "YGHqL9MgoeF4Kgzh",
+          "mode": "list",
+          "cachedResultName": "Participant List",
+          "cachedResultUrl": "/projects/PROJECT_ID/datatables/YGHqL9MgoeF4Kgzh"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "phoneNumber",
+              "keyValue": "={{ $('Webhook').item.json.body.data.key.remoteJid }}"
+            }
+          ]
+        },
+        "options": {
+          "dryRun": false
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1536,
+        256
+      ],
+      "id": "6290d451-8fe5-406f-9cb6-5a2332ce0c1b",
+      "name": "Delete participant"
+    },
+    {
+      "parameters": {
+        "operation": "rowNotExists",
+        "dataTableId": {
+          "__rl": true,
+          "value": "10A3FZrCWsNIwDH7",
+          "mode": "list",
+          "cachedResultName": "Interactions List",
+          "cachedResultUrl": "/projects/PROJECT_ID/datatables/10A3FZrCWsNIwDH7"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "interactionNumber",
+              "keyValue": "={{ $('Webhook').item.json.body.data.key.remoteJid }}"
+            },
+            {
+              "keyName": "interactionType",
+              "keyValue": "info"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1360,
+        448
+      ],
+      "id": "475238b4-233f-4fd4-895d-c64ac1ffd489",
+      "name": "If no INFO interaction with Number yet"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "10A3FZrCWsNIwDH7",
+          "mode": "list",
+          "cachedResultName": "Interactions List",
+          "cachedResultUrl": "/projects/PROJECT_ID/datatables/10A3FZrCWsNIwDH7"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "interactionNumber": "={{ $('Webhook').item.json.body.data.key.remoteJid }}",
+            "interactionType": "info"
+          },
+          "matchingColumns": [
+            "interactionNumber"
+          ],
+          "schema": [
+            {
+              "id": "interactionNumber",
+              "displayName": "interactionNumber",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "interactionType",
+              "displayName": "interactionType",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1536,
+        448
+      ],
+      "id": "b089e857-b967-475f-a49d-b89c2ada6efe",
+      "name": "Insert INFO interaction"
+    },
+    {
+      "parameters": {
+        "operation": "rowNotExists",
+        "dataTableId": {
+          "__rl": true,
+          "value": "10A3FZrCWsNIwDH7",
+          "mode": "list",
+          "cachedResultName": "Interactions List",
+          "cachedResultUrl": "/projects/PROJECT_ID/datatables/10A3FZrCWsNIwDH7"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "interactionNumber",
+              "keyValue": "={{ $('Webhook').item.json.body.data.key.remoteJid }}"
+            },
+            {
+              "keyName": "interactionType",
+              "keyValue": "enter"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1536,
+        64
+      ],
+      "id": "6024bc98-d9f6-4d67-b4d9-db062a89be1f",
+      "name": "If no previous ENTER interaction with Number"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "10A3FZrCWsNIwDH7",
+          "mode": "list",
+          "cachedResultName": "Interactions List",
+          "cachedResultUrl": "/projects/PROJECT_ID/datatables/10A3FZrCWsNIwDH7"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "interactionNumber": "={{ $('Webhook').item.json.body.data.key.remoteJid }}",
+            "interactionType": "enter"
+          },
+          "matchingColumns": [
+            "interactionNumber"
+          ],
+          "schema": [
+            {
+              "id": "interactionNumber",
+              "displayName": "interactionNumber",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "interactionType",
+              "displayName": "interactionType",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1728,
+        64
+      ],
+      "id": "1d166188-4baa-47a6-8593-5d0d6f14a6fe",
+      "name": "Insert new ENTER interaction"
+    },
+    {
+      "parameters": {
+        "operation": "rowNotExists",
+        "dataTableId": {
+          "__rl": true,
+          "value": "10A3FZrCWsNIwDH7",
+          "mode": "list",
+          "cachedResultName": "Interactions List",
+          "cachedResultUrl": "/projects/PROJECT_ID/datatables/10A3FZrCWsNIwDH7"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "interactionNumber",
+              "keyValue": "={{ $('Webhook').item.json.body.data.key.remoteJid }}"
+            },
+            {
+              "keyName": "interactionType",
+              "keyValue": "info"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2416,
+        64
+      ],
+      "id": "05bfb5a6-811e-45ce-8552-e98774e3a0bc",
+      "name": "If no previous INFO interaction with Number"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "10A3FZrCWsNIwDH7",
+          "mode": "list",
+          "cachedResultName": "Interactions List",
+          "cachedResultUrl": "/projects/PROJECT_ID/datatables/10A3FZrCWsNIwDH7"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "interactionNumber": "={{ $('Webhook').item.json.body.data.key.remoteJid }}",
+            "interactionType": "info"
+          },
+          "matchingColumns": [
+            "interactionNumber"
+          ],
+          "schema": [
+            {
+              "id": "interactionNumber",
+              "displayName": "interactionNumber",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "interactionType",
+              "displayName": "interactionType",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "optimizeBulk": false
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2608,
+        64
+      ],
+      "id": "27881dcb-e356-4f6c-b9ff-fc5551dec1ce",
+      "name": "Insert new INFO interaction"
+    },
+    {
+      "parameters": {
+        "operation": "rowNotExists",
+        "dataTableId": {
+          "__rl": true,
+          "value": "10A3FZrCWsNIwDH7",
+          "mode": "list",
+          "cachedResultName": "Interactions List",
+          "cachedResultUrl": "/projects/PROJECT_ID/datatables/10A3FZrCWsNIwDH7"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "interactionNumber",
+              "keyValue": "={{ $('Webhook').item.json.body.data.key.remoteJid }}"
+            },
+            {
+              "keyName": "interactionType",
+              "keyValue": "leave"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1728,
+        256
+      ],
+      "id": "cd6b0c78-fa0d-44a3-915e-aee669af7a33",
+      "name": "If no previous LEAVE interaction with Number"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "10A3FZrCWsNIwDH7",
+          "mode": "list",
+          "cachedResultName": "Interactions List",
+          "cachedResultUrl": "/projects/PROJECT_ID/datatables/10A3FZrCWsNIwDH7"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "interactionNumber": "={{ $('Webhook').item.json.body.data.key.remoteJid }}",
+            "interactionType": "leave"
+          },
+          "matchingColumns": [
+            "interactionNumber"
+          ],
+          "schema": [
+            {
+              "id": "interactionNumber",
+              "displayName": "interactionNumber",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "interactionType",
+              "displayName": "interactionType",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1904,
+        256
+      ],
+      "id": "43cb0551-69ba-497a-b3d1-3bf6844bfcd2",
+      "name": "Insert new LEAVE interaction"
+    },
+    {
+      "parameters": {
+        "operation": "rowExists",
+        "dataTableId": {
+          "__rl": true,
+          "value": "10A3FZrCWsNIwDH7",
+          "mode": "list",
+          "cachedResultName": "Interactions List",
+          "cachedResultUrl": "/projects/PROJECT_ID/datatables/10A3FZrCWsNIwDH7"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "interactionNumber",
+              "keyValue": "={{ $('Webhook').item.json.body.data.key.remoteJid }}"
+            },
+            {
+              "keyName": "interactionType",
+              "keyValue": "enter"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2416,
+        256
+      ],
+      "id": "4418ec87-a8d4-427f-b3ae-5c7eff07cc33",
+      "name": "If ENTER interaction exists"
+    },
+    {
+      "parameters": {
+        "operation": "deleteRows",
+        "dataTableId": {
+          "__rl": true,
+          "value": "10A3FZrCWsNIwDH7",
+          "mode": "list",
+          "cachedResultName": "Interactions List",
+          "cachedResultUrl": "/projects/PROJECT_ID/datatables/10A3FZrCWsNIwDH7"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "interactionNumber",
+              "keyValue": "={{ $('Webhook').item.json.body.data.key.remoteJid }}"
+            },
+            {
+              "keyName": "interactionType",
+              "keyValue": "enter"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2608,
+        256
+      ],
+      "id": "3406144a-f3ec-4c1d-89e8-485a1221495a",
+      "name": "Delete ENTER interaction"
+    },
+    {
+      "parameters": {
+        "operation": "rowExists",
+        "dataTableId": {
+          "__rl": true,
+          "value": "10A3FZrCWsNIwDH7",
+          "mode": "list",
+          "cachedResultName": "Interactions List",
+          "cachedResultUrl": "/projects/PROJECT_ID/datatables/10A3FZrCWsNIwDH7"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "interactionNumber",
+              "keyValue": "={{ $('Webhook').item.json.body.data.key.remoteJid }}"
+            },
+            {
+              "keyName": "interactionType",
+              "keyValue": "leave"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2416,
+        -96
+      ],
+      "id": "d17ad19e-f5dc-49a5-86fb-28b2678c93da",
+      "name": "If LEAVE interaction exists"
+    },
+    {
+      "parameters": {
+        "operation": "deleteRows",
+        "dataTableId": {
+          "__rl": true,
+          "value": "10A3FZrCWsNIwDH7",
+          "mode": "list",
+          "cachedResultName": "Interactions List",
+          "cachedResultUrl": "/projects/PROJECT_ID/datatables/10A3FZrCWsNIwDH7"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "interactionNumber",
+              "keyValue": "={{ $('Webhook').item.json.body.data.key.remoteJid }}"
+            },
+            {
+              "keyName": "interactionType",
+              "keyValue": "leave"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2608,
+        -96
+      ],
+      "id": "b68c7e06-2d6c-4e96-ae2c-ba04c1aeb4c0",
+      "name": "Delete LEAVE interaction"
+    },
+    {
+      "parameters": {
+        "operation": "rowNotExists",
+        "dataTableId": {
+          "__rl": true,
+          "value": "10A3FZrCWsNIwDH7",
+          "mode": "list",
+          "cachedResultName": "Interactions List",
+          "cachedResultUrl": "/projects/PROJECT_ID/datatables/10A3FZrCWsNIwDH7"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "interactionNumber",
+              "keyValue": "={{ $('Webhook').item.json.body.data.key.remoteJid }}"
+            },
+            {
+              "keyName": "interactionType",
+              "keyValue": "temp"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -160,
+        -128
+      ],
+      "id": "0ef3d161-c86e-4b7c-b369-7a7bdbdc06d2",
+      "name": "If TEMP interaction does not exist"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "10A3FZrCWsNIwDH7",
+          "mode": "list",
+          "cachedResultName": "Interactions List",
+          "cachedResultUrl": "/projects/PROJECT_ID/datatables/10A3FZrCWsNIwDH7"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "interactionNumber": "={{ $('Webhook').item.json.body.data.key.remoteJid }}",
+            "interactionType": "temp"
+          },
+          "matchingColumns": [
+            "phoneNumber"
+          ],
+          "schema": [
+            {
+              "id": "interactionNumber",
+              "displayName": "interactionNumber",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "interactionType",
+              "displayName": "interactionType",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        48,
+        -128
+      ],
+      "id": "805f0a65-ba20-4881-858d-b6c6d441085d",
+      "name": "Insert TEMP Interaction"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "5f18d118-119f-4b41-ab32-0fbfd560ea0c",
+              "leftValue": "={{ $('Webhook').item.json.body.data.key.remoteJid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        480,
+        -128
+      ],
+      "id": "b8069c6f-920e-4597-854b-f76b2b3060cd",
+      "name": "If from OWNER"
+    },
+    {
+      "parameters": {
+        "operation": "deleteRows",
+        "dataTableId": {
+          "__rl": true,
+          "value": "10A3FZrCWsNIwDH7",
+          "mode": "list",
+          "cachedResultName": "Interactions List",
+          "cachedResultUrl": "/projects/PROJECT_ID/datatables/10A3FZrCWsNIwDH7"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "interactionNumber",
+              "keyValue": "={{ $('Webhook').item.json.body.data.key.remoteJid }}"
+            },
+            {
+              "keyName": "interactionType",
+              "keyValue": "temp"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        -320
+      ],
+      "id": "6be5872e-e945-40aa-bca9-2a2de1112de0",
+      "name": "Clear TEMP interaction"
+    },
+    {
+      "parameters": {
+        "amount": "={{ (Math.random() * (2 - 0.5) + 0.5).toFixed(2) }}"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        256,
+        -128
+      ],
+      "id": "3b66e65d-146b-4050-964a-677bd904c787",
+      "name": "Wait to start",
+      "webhookId": "00000000-0000-0000-0000-000000000002"
+    },
+    {
+      "parameters": {
+        "amount": "={{ (Math.random() * (5 - 1) + 1) }}"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        480,
+        -320
+      ],
+      "id": "2ffdc3a0-55d3-4243-8760-2f74b733ed00",
+      "name": "Wait to clear",
+      "webhookId": "00000000-0000-0000-0000-000000000002"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "5f18d118-119f-4b41-ab32-0fbfd560ea0c",
+              "leftValue": "={{ $('Webhook').item.json.body.data.key.remoteJid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "0ea1eaa8-1d76-4853-a56a-438ced7861a2",
+              "leftValue": "={{ $('Webhook').item.json.body.data.message.conversation }}",
+              "rightValue": "MESSAGE:",
+              "operator": {
+                "type": "string",
+                "operation": "startsWith"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        688,
+        -112
+      ],
+      "id": "4c302d06-c3c5-42ec-876b-f707a4a0b410",
+      "name": "If ADMIN & MESSAGE"
+    },
+    {
+      "parameters": {
+        "operation": "rowNotExists",
+        "dataTableId": {
+          "__rl": true,
+          "value": "YGHqL9MgoeF4Kgzh",
+          "mode": "list",
+          "cachedResultName": "Participant List",
+          "cachedResultUrl": "/projects/PROJECT_ID/datatables/YGHqL9MgoeF4Kgzh"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "phoneNumber",
+              "keyValue": "={{ $('Webhook').item.json.body.data.key.remoteJid }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1824,
+        448
+      ],
+      "id": "63ad0c8e-a684-4989-83b9-8060fbe6f99b",
+      "name": "If PARTICIPANT is NOT in the list"
+    },
+    {
+      "parameters": {
+        "operation": "rowExists",
+        "dataTableId": {
+          "__rl": true,
+          "value": "YGHqL9MgoeF4Kgzh",
+          "mode": "list",
+          "cachedResultName": "Participant List",
+          "cachedResultUrl": "/projects/PROJECT_ID/datatables/YGHqL9MgoeF4Kgzh"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "phoneNumber",
+              "keyValue": "={{ $('Webhook').item.json.body.data.key.remoteJid }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1824,
+        640
+      ],
+      "id": "137a61b6-9e3f-4b94-b49b-09bd701aeb50",
+      "name": "If PARTICIPANT is in the list"
+    },
+    {
+      "parameters": {
+        "operation": "deleteRows",
+        "dataTableId": {
+          "__rl": true,
+          "value": "10A3FZrCWsNIwDH7",
+          "mode": "list",
+          "cachedResultName": "Interactions List",
+          "cachedResultUrl": "/projects/PROJECT_ID/datatables/10A3FZrCWsNIwDH7"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "interactionNumber",
+              "keyValue": "={{ $('Webhook').item.json.body.data.key.remoteJid }}"
+            },
+            {
+              "keyName": "interactionType",
+              "keyValue": "info"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2608,
+        432
+      ],
+      "id": "77ab9a51-4107-4566-bb68-cf0032d476e6",
+      "name": "Insert new INFO interaction1"
+    },
+    {
+      "parameters": {
+        "operation": "rowExists",
+        "dataTableId": {
+          "__rl": true,
+          "value": "10A3FZrCWsNIwDH7",
+          "mode": "list",
+          "cachedResultName": "Interactions List",
+          "cachedResultUrl": "/projects/PROJECT_ID/datatables/10A3FZrCWsNIwDH7"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "interactionNumber",
+              "keyValue": "={{ $('Webhook').item.json.body.data.key.remoteJid }}"
+            },
+            {
+              "keyName": "interactionType",
+              "keyValue": "info"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2416,
+        432
+      ],
+      "id": "f3f2e69f-30a4-49ed-b4d6-e77af6840b67",
+      "name": "If previous INFO interaction with Number"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "BenizVnzhhc0KWbv",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/BenizVnzhhc0KWbv",
+          "cachedResultName": "Send Message to Participants"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "messageText": "={{ $json.afterString }}",
+            "messadeId": "={{ $('Webhook').item.json.body.data.key.id }}"
+          },
+          "matchingColumns": [
+            "postGuid"
+          ],
+          "schema": [
+            {
+              "id": "messadeId",
+              "displayName": "messadeId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "messageText",
+              "displayName": "messageText",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1152,
+        -128
+      ],
+      "id": "1345cca2-a188-4e94-8ae7-405799c38d35",
+      "name": "Call 'Send Message to Participants'"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "automation_instance",
+        "remoteJid": "={{ $('Webhook').item.json.body.data.key.remoteJid }}",
+        "messageText": "Você está inscrito para receber as notícias e comunicações das nossas publicações!\n\nAcesse nossos portais para ficar por dentro: \n- *Publicação A:* https://example.com/\n- *Publicação B:* https://example.com/\n\nAgora é só aguardar que enviaremos novas notícias aqui nessa conversa assim que elas forem publicadas.\n\n*Para parar de receber mensagens envie a mensagem \"SAIR\".*",
+        "options_message": {
+          "linkPreview": true
+        }
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        2096,
+        64
+      ],
+      "id": "001e3b7a-3332-44eb-8d9b-3effb71852a0",
+      "name": "Send welcome message",
+      "credentials": {
+        "evolutionApi": {
+          "id": "AOSxUBGW5kyCIXMj",
+          "name": "Evolution account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "automation_instance",
+        "remoteJid": "={{ $('Webhook').item.json.body.data.key.remoteJid }}",
+        "messageText": "Você saiu da lista de comunicações da Empresa Exemplo no WhatsApp.\n\nCaso queira retornar a receber nossas notícias no futuro é só enviar a mensagem \"ENTRAR\" novamente.\n\nAgradecemos o seu interesse!",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        2096,
+        256
+      ],
+      "id": "50b319a5-9132-46b9-8590-9b3a8fd95b82",
+      "name": "Send exit message",
+      "credentials": {
+        "evolutionApi": {
+          "id": "AOSxUBGW5kyCIXMj",
+          "name": "Evolution account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "automation_instance",
+        "remoteJid": "={{ $('Webhook').item.json.body.data.key.remoteJid }}",
+        "messageText": "Olá, bem vindo ao canal de notícias no WhatsApp! Este é um canal automático onde enviamos as últimas notícias diretamente para o seu número.\n\n*Envie a mensagem \"ENTRAR\" para receber nossas notícias aqui nessa conversa.*\n\nPara conversar direto com a Empresa Exemplo entre em contato no WhatsApp (11) 90000-0000 ou no email contato@example.com.",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        2096,
+        448
+      ],
+      "id": "8fda4d27-2442-414a-8cd1-e6004257c19a",
+      "name": "Send guidance info message",
+      "credentials": {
+        "evolutionApi": {
+          "id": "AOSxUBGW5kyCIXMj",
+          "name": "Evolution account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "automation_instance",
+        "remoteJid": "={{ $('Webhook').item.json.body.data.key.remoteJid }}",
+        "messageText": "Você já está cadastrado no nosso canal de notícias. Enviaremos as últimas notícias diretamente aqui nessa conversa!\n\nPara conversar direto com a Empresa Exemplo entre em contato no WhatsApp (11) 90000-0000 ou no email contato@example.com.\n\nPara sair dessa lista de comunicação envie a mensagem \"SAIR\".",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        2096,
+        640
+      ],
+      "id": "eaae1a83-0d39-4105-bfbc-3f195fe13744",
+      "name": "Send participation message",
+      "credentials": {
+        "evolutionApi": {
+          "id": "AOSxUBGW5kyCIXMj",
+          "name": "Evolution account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If TEMP interaction does not exist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If \"ENTRAR\"": {
+      "main": [
+        [
+          {
+            "node": "If NUMBER does not exist",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If \"SAIR\"",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If NUMBER does not exist": {
+      "main": [
+        [
+          {
+            "node": "Insert Participant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If \"SAIR\"": {
+      "main": [
+        [
+          {
+            "node": "If NUMBER exists",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If no INFO interaction with Number yet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Message": {
+      "main": [
+        [
+          {
+            "node": "Call 'Send Message to Participants'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If NUMBER exists": {
+      "main": [
+        [
+          {
+            "node": "Delete participant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Participant": {
+      "main": [
+        [
+          {
+            "node": "If no previous ENTER interaction with Number",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If no INFO interaction with Number yet": {
+      "main": [
+        [
+          {
+            "node": "Insert INFO interaction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert INFO interaction": {
+      "main": [
+        [
+          {
+            "node": "If PARTICIPANT is NOT in the list",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If PARTICIPANT is in the list",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If no previous ENTER interaction with Number": {
+      "main": [
+        [
+          {
+            "node": "Insert new ENTER interaction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert new ENTER interaction": {
+      "main": [
+        [
+          {
+            "node": "Send welcome message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If no previous INFO interaction with Number": {
+      "main": [
+        [
+          {
+            "node": "Insert new INFO interaction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete participant": {
+      "main": [
+        [
+          {
+            "node": "If no previous LEAVE interaction with Number",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If no previous LEAVE interaction with Number": {
+      "main": [
+        [
+          {
+            "node": "Insert new LEAVE interaction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert new LEAVE interaction": {
+      "main": [
+        [
+          {
+            "node": "Send exit message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If ENTER interaction exists": {
+      "main": [
+        [
+          {
+            "node": "Delete ENTER interaction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If LEAVE interaction exists": {
+      "main": [
+        [
+          {
+            "node": "Delete LEAVE interaction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If TEMP interaction does not exist": {
+      "main": [
+        [
+          {
+            "node": "Insert TEMP Interaction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert TEMP Interaction": {
+      "main": [
+        [
+          {
+            "node": "Wait to start",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If from OWNER": {
+      "main": [
+        [],
+        [
+          {
+            "node": "If ADMIN & MESSAGE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait to start": {
+      "main": [
+        [
+          {
+            "node": "If from OWNER",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Wait to clear",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait to clear": {
+      "main": [
+        [
+          {
+            "node": "Clear TEMP interaction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If ADMIN & MESSAGE": {
+      "main": [
+        [
+          {
+            "node": "Split Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If \"ENTRAR\"",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If PARTICIPANT is NOT in the list": {
+      "main": [
+        [
+          {
+            "node": "Send guidance info message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If PARTICIPANT is in the list": {
+      "main": [
+        [
+          {
+            "node": "Send participation message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If previous INFO interaction with Number": {
+      "main": [
+        [
+          {
+            "node": "Insert new INFO interaction1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send welcome message": {
+      "main": [
+        [
+          {
+            "node": "If no previous INFO interaction with Number",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If LEAVE interaction exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send exit message": {
+      "main": [
+        [
+          {
+            "node": "If ENTER interaction exists",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If previous INFO interaction with Number",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "74893d42-82c0-47dd-be26-79770a850716",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "nodeGroups": [],
+  "id": "l4cHmCUZJ3flVV1f",
+  "tags": []
+}

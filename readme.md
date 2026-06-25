@@ -1,65 +1,34 @@
-### n8n + Evolution API (Docker Starter)
+### WhatsApp Subscriber Notification Platform
 
-This repository is my personal template for a N8N + Evolution API structure running on Docker for automating the implementation of WhatsApp flows.
+A Dockerized **n8n + Evolution API** stack that powers an automated WhatsApp channel for a Brazilian publishing client: readers opt in via a keyword, new articles are detected from RSS feeds, and matching subscribers receive a broadcast — all on infrastructure cost low enough to justify a channel with no direct revenue tie-in.
 
-### Requirements
+Meta's official WhatsApp Business API was ruled out on a per-message cost basis, which pushed the design toward an unofficial gateway (Evolution API) behind a residential proxy, with deliberate anti-ban engineering (jittered send delays, batching, per-recipient dedup) built in from the start rather than added after a ban.
 
-- **Docker Desktop**
-- **Git**
-
-### Start
-Inside the project folder run this command on the terminal:
-
-```bash
-docker compose up -d
-```
-
-The file `docker-compose.yaml` will start all the required services.
-
-### Access
-
-- **n8n**: `http://localhost:5678`
-
-- **Evolution API**: `http://localhost:8080/manager/`
-
-### Used Commands
-```bash
-# Status
-docker compose ps
-
-# Logs
-docker compose logs -f evolution-api
-
-# Restart
-docker compose restart
-
-# Stop
-docker compose stop
-
-# Stop and remove containers
-docker compose down
-
-# Update images & setup containers again
-docker compose pull && docker compose up -d --remove-orphans
-```
+**Full write-up, architecture diagrams, and the engineering tradeoffs behind these decisions:** *[case study link — add once published]*
 
 ### Stack
 
-- `evolution-api`: API for connecting WhatsApp services.
-- `postgres-evolution`: Database.
-- `redis-evolution`: Caching.
-- `n8n`: Automation platform.
+- **n8n** — orchestration layer; all business logic (subscriber lifecycle, RSS polling, message delivery, data retention) lives here as workflows.
+- **Evolution API** — unofficial WhatsApp gateway; sends outbound messages and forwards inbound events to n8n via webhook.
+- **PostgreSQL** — persistent store for n8n state and the project's data tables (participants, interactions, news, delivery receipts).
+- **Redis** — caching/session layer for Evolution API connection stability.
+- **Caddy** — reverse proxy with automatic TLS in front of n8n and the Evolution API manager.
+- **Webshare** — residential proxy that Evolution API routes through, to reduce ban risk from datacenter-IP traffic patterns.
 
-### Others
-- **.env**: You will need an `.env` file setup to run this structure. A `.env.example` is provided for example, fill out the missing API_KEYs to run.
-- **Used Ports**: Some ports listed might already be used in your machine, edit these ports in `docker-compose.yaml`.
-- **Logs**: Use `docker compose logs -f <service>` to check errors in real time.
+### Workflows
 
-### Remove all (including volumes)
-ATTENTION: This erases all data stored in volumes.
+- **Participant Manager + Admin Messages** — webhook-triggered on every inbound message; handles subscriber opt-in/opt-out keywords, lifecycle messaging, and a hidden admin broadcast channel.
+- **RSS Check** — hourly scheduled poll of the client's article feeds; dedups against previously-seen posts and triggers delivery for anything new.
+- **Send Message to Participants** — shared sub-workflow called by both of the above; the single delivery path for the system, with batching, randomized send delays, and per-recipient dedup.
+- **Data cleanup jobs** — two scheduled workflows that prune stale interaction state and old delivery records so the data tables don't grow unbounded.
 
-```bash
-docker compose down -v
-```
+### Deployment
+
+Deployed via a two-stage GitHub Actions pipeline (`.github/workflows/deploy.yml`): a validation job checks the Docker Compose config before anything touches the server, then a deploy job SSHes into the VPS, resets the working copy to match `main`, and rolls out new images with `docker compose pull && docker compose up -d --remove-orphans`. `Caddyfile` handles TLS termination for both the n8n and Evolution API endpoints.
+
+### Setup
+
+Requires Docker Desktop and Git. Copy `.env.example` to `.env` and fill in the required keys, then `docker compose up -d` to start the stack.
+
 ### License
 Free to use.

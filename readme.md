@@ -1,9 +1,5 @@
 ### WhatsApp Subscriber Notification Platform
 
-A Dockerized **n8n + Evolution API** stack that powers an automated WhatsApp channel for a Brazilian publishing client: readers opt in via a keyword, new articles are detected from RSS feeds, and matching subscribers receive a broadcast — all on infrastructure cost low enough to justify a channel with no direct revenue tie-in.
-
-Meta's official WhatsApp Business API was ruled out on a per-message cost basis, which pushed the design toward an unofficial gateway (Evolution API) behind a residential proxy, with deliberate anti-ban engineering (jittered send delays, batching, per-recipient dedup) built in from the start rather than added after a ban.
-
 **Full write-up, architecture diagrams, and the engineering tradeoffs behind these decisions:** [acoelho.dev](https://acoelho.dev)
 
 ### Stack
